@@ -1,14 +1,12 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, h1, input, li, text, ul)
+import Html exposing (Html, button, div, form, h1, input, li, p, text, ul)
 import Html.Attributes exposing (checked, disabled, placeholder, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Html exposing (p)
-
 
 todosUrl : String
 todosUrl =
@@ -145,13 +143,17 @@ update msg model =
 
 -- VIEW
 
+sortTodosByTitle : List ToDo -> List ToDo
+sortTodosByTitle todos =
+    List.sortBy (\todo -> todo.title) todos
 
 view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "My To Do App" ]
         , viewAddToDo model
-        ]
+        , ul [] (List.map (viewToDo model) (sortTodosByTitle model.todos))
+                ]
 
 
 viewAddToDo : Model -> Html Msg
@@ -163,9 +165,10 @@ viewAddToDo model =
 
             Just error ->
                 div [] [ text ("Error: " ++ error) ]
-        , input [ type_ "text", placeholder "What needs to be done?", onInput NewInput, value model.input ] []
-        , button [ onClick CreateToDo, disabled (String.isEmpty model.input) ] [ text "Add" ]
-        , ul [] (List.map (viewToDo model) model.todos)
+        , form [ onSubmit CreateToDo ]
+            [ input [ type_ "text", placeholder "What needs to be done?", onInput NewInput, value model.input ] []
+            , button [ type_ "submit", disabled (String.isEmpty model.input) ] [ text "Add" ]
+            ]
         ]
 
 
@@ -182,10 +185,12 @@ viewToDoListItem todo =
 viewEditToDo : ToDo -> String -> Html Msg
 viewEditToDo todo title =
     li []
-        [ input [ type_ "checkbox", checked todo.completed, onClick (CompleteToDo todo.id (not todo.completed)) ] []
-        , input [ type_ "text", onInput NewTitle, value title ] []
-        , button [ onClick (SaveEdit todo.id) ] [ text "Save" ]
-        , button [ onClick CancelEdit ] [ text "Cancel" ]
+        [ form [ onSubmit (SaveEdit todo.id) ]
+            [ input [ type_ "checkbox", checked todo.completed, onClick (CompleteToDo todo.id (not todo.completed)) ] []
+            , input [ type_ "text", onInput NewTitle, value title ] []
+            , button [ type_ "submit" ] [ text "Save" ]
+            , button [ onClick CancelEdit ] [ text "Cancel" ]
+            ]
         ]
 
 

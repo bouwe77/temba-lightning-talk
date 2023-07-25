@@ -32,6 +32,7 @@ img {
 
 input[type="text"] {
   margin-right:10px;
+  width: 200px;
 }
 
 input[type="text"]::-webkit-input-placeholder {
