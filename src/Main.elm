@@ -7,6 +7,7 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Html.Attributes exposing (class)
 
 todosUrl : String
 todosUrl =
@@ -189,7 +190,7 @@ viewEditToDo todo title =
             [ input [ type_ "checkbox", checked todo.completed, onClick (CompleteToDo todo.id (not todo.completed)) ] []
             , input [ type_ "text", onInput NewTitle, value title ] []
             , button [ type_ "submit" ] [ text "Save" ]
-            , button [ onClick CancelEdit ] [ text "Cancel" ]
+            , button [ onClick CancelEdit, class "button-as-link" ] [ text "Cancel" ]
             ]
         ]
 
